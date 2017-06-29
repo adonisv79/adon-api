@@ -6,18 +6,20 @@ const Hapi = require('hapi');
 const logger = require('./adon-logger')('info');
 const Promise = require('bluebird');
 const url = require('url');
-let _singleton, _routes;
+let _singleton, _routes, _plugins;
 
+require('dotenv').config(); //load .env file
 //initiate server instance
-const hapi_server = new Hapi.Server();
+const _hapi = new Hapi.Server();
 
 class RestHapiServer extends EventEmitter {
 	
 	constructor(root_path){
 		super();
-		_.set(hapi_server, 'path.root', root_path);
+		this.hapi = _hapi;
+		_.set(this, 'path.root', root_path);
 		logger.info('server', 'Initializing from ' + root_path + '...');
-		// Create a hapi_server with a host and port
+		// Create a _hapi with a host and port
 		let host_url;
 
 		//Set the connections
@@ -30,31 +32,30 @@ class RestHapiServer extends EventEmitter {
 			host_url = url.parse(process.env.API_SERVER_HOST_URL);
 		}
 
-		hapi_server.connection({
+		_hapi.connection({
 			address: host_url.hostName, 
 			host: host_url.hostName, 
 			port: host_url.port 
 		});
 
-		logger.info('server', 'Loading routes from ' + root_path + '/routes...');
-		_routes = require('./route-manager')(hapi_server);
+		_plugins =  require('./plugin-manager')(this);
+		_routes = require('./route-manager')(this);
 	}
 	
 	start() {
 		logger.info('server', 'Start invoked...');
-		_routes.loadRoutes();
 		return new Promise((resolve, reject) => {
-			logger.info('server', 'Runing starting event...');
-			this.emit('starting', hapi_server);
-			//Start the hapi_server
-			hapi_server.start((err) => {
+			this.emit('starting', this);
+
+			//Start the _hapi
+			_hapi.start((err) => {
 				if (err) {
 					return reject(err);
 				}
-				logger.info('server', 'Successfully started at:', hapi_server.info.uri);
+				logger.info('server', 'Successfully started at:', _hapi.info.uri);
 				logger.info('server', 'Runing start event...');
-				this.emit('started', hapi_server);
-				resolve(hapi_server);
+				this.emit('started', _hapi);
+				resolve(_hapi);
 			});
 		});
 	}
@@ -64,6 +65,7 @@ class RestHapiServer extends EventEmitter {
 	}
 
 	get routes() { return _routes; }
+	get plugins() { return _plugins; }
 	
 }
 

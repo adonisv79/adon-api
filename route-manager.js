@@ -3,37 +3,42 @@ const _ = require('lodash');
 const Boom = require('boom');
 const EventEmitter = require('events');
 const logger = require('./adon-logger')('info');
+const Promise = require('bluebird');
 const REST_METHODS = [ 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH' ];
-let _singleton, _hapi_server, self
+let _singleton, _server, self
 
 function handleRouteError(req, rep, err) {
 	logger.critical('route', err.message, err);
 }
 
 class RouteManager extends EventEmitter{
-	constructor(hapi_server) {
+	constructor(server) {
 		super();
 		self = this;
-		_hapi_server = hapi_server;
+		_server = server;
 	}
 
 	loadRoutes() {
-		const route_path = _hapi_server.path.root + '/routes';
-		logger.info('server', 'Loading routes from ' + route_path + '/routes...');
-		let routes = require('require-all')({
-			dirname     :  route_path,
-			filter      :  /(.)\.js$/,
-			recursive   : true,
-			resolve: (Route) => {
-				if (typeof Route !== 'function') {
-					throw new Error('ROUTE_NOT_A_FUNCTION');
+		return new Promise((resolve, reject) => {
+			const route_path = _server.path.root + '/routes';
+			logger.info('server', 'Loading routes from ' + route_path + '/routes...');
+			let routes = require('require-all')({
+				dirname     :  route_path,
+				filter      :  /(.)\.js$/,
+				recursive   : true,
+				resolve: (Route) => {
+					if (typeof Route !== 'function') {
+						throw new Error('ROUTE_NOT_A_FUNCTION');
+					}
+					return this.add(Route(_server));
 				}
-				return this.add(Route(_hapi_server));
-			}
+			});
+			resolve();
 		});
 	}
 
 	add (route_config) {
+		_server.log('info', 'route-mgr' , 'adding route ' + route_config.method + ' ' + route_config.path + '...');
 		self.emit('add', route_config);
 		//validate critical items
 		if (!route_config.method) {
@@ -75,11 +80,12 @@ class RouteManager extends EventEmitter{
 		}
 
 		//Add the route
-		_hapi_server.route(route_config);
+		_server.hapi.route(route_config);
+		_server.log('info', 'route-mgr' , route_config.method + ' ' + route_config.path + ' added!');
 	}
 }
 
 
-module.exports = (hapi_server) => {
-	return _singleton ? _singleton : _singleton = new RouteManager(hapi_server)
+module.exports = (server) => {
+	return _singleton ? _singleton : _singleton = new RouteManager(server)
 };

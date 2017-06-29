@@ -1,6 +1,6 @@
 {
   "name": "adon-api",
-  "version": "1.0.0",
+  "version": "1.0.4",
   "description": "HAPI Service customized for using best practices like dotenv, promises and intel logging. It prioritizes configuration over code",
   "main": "index.js",
   "scripts": {
