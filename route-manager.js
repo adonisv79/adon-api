@@ -8,7 +8,33 @@ const REST_METHODS = [ 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS
 let _singleton, _server, self
 
 function handleRouteError(req, rep, err) {
-	logger.critical('route', err.message, err);
+	let code;
+
+	if (!err.isBoom) {
+		if (!err.isBoom && err.name && !(err.name === 'Error' || err.name === 'TypeError')) {
+			if (err.message) {
+				err.name = ''; //hide the name because BOOM appends it to the message
+			}
+		}
+		err = Boom.badRequest(err);
+	}
+
+	if (err.isBoom) {
+		code = err.statusCode || err.output.statusCode;
+	} else { //other error types
+		if (err.name === 'MongoError') {
+			code = 500;
+			err = Boom.badImplementation(err);
+		}
+	}
+
+	if (code >= 400 && code < 500) { //handle client errors
+		logger.error('route', err.message, err);
+	} else { //handle server (and possibly any other codes) errors
+		logger.critical('route', err.message, err);
+	}
+
+	return rep(Boom.wrap(err));
 }
 
 class RouteManager extends EventEmitter{
@@ -61,11 +87,15 @@ class RouteManager extends EventEmitter{
 			});
 			try {
 				logger.info('route', 'endpoint called');
-				real_route(req, function(data, status_code) {
-					if (!status_code && data.statusCode) {
-						status_code = data.statusCode; //override
-					}
-					rep(data).code(status_code || 200);
+				return Promise.resolve().then(() => {
+					return real_route(req, function(data, status_code) {
+						if (!status_code && data.statusCode) {
+							status_code = data.statusCode; //override
+						}
+						rep(data).code(status_code || 200);
+					});
+				}).catch((err) => {
+					handleRouteError(req, rep, err);
 				});
 			} catch(err) {
 				handleRouteError(req, rep, err);
