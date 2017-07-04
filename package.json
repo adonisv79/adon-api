@@ -1,12 +1,24 @@
 {
   "name": "adon-api",
-  "version": "1.0.5",
+  "version": "1.0.6",
+  "author": "Adonis Lee Villamor <adonisv79@gmail.com> (http://www.bytecommander.com)",
   "description": "HAPI Service customized for using best practices like dotenv, promises and intel logging. It prioritizes configuration over code",
+  "keywords": [
+    "adon",
+    "api",
+    "hapi",
+    "rest",
+    "adonis",
+    "villamor"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/adonisv79/adon-api"
+  },
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Adonis Lee Villamor <adonisv79@gmail.com> (http://www.bytecommander.com)",
   "license": "UNLICENSED",
   "dependencies": {
     "bluebird": "3.5.0",
