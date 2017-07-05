@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const EventEmitter = require('events');
 const fs = require('fs');
-const logger = require('./adon-logger');
+const logger = require('./adon-logger')();
 
 let _singleton, _server, self;
 

@@ -2,7 +2,7 @@
 const _ = require('lodash');
 const Boom = require('boom');
 const EventEmitter = require('events');
-const logger = require('./adon-logger');
+const logger = require('./adon-logger')();
 const Promise = require('bluebird');
 const REST_METHODS = [ 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH' ];
 let _singleton, _server, self
