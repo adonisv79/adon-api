@@ -3,13 +3,13 @@
 const _ = require('lodash');
 const EventEmitter = require('events');
 const Hapi = require('hapi');
-const logger = require('./adon-logger')('info');
 const Promise = require('bluebird');
 const url = require('url');
 let _singleton, _routes, _plugins;
 
 require('dotenv').config(); //load .env file
 //initiate server instance
+const logger = require('./adon-logger')(process.env.LOGGING_LEVEL || 'info');
 const _hapi = new Hapi.Server();
 
 class RestHapiServer extends EventEmitter {
