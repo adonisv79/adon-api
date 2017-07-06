@@ -18,8 +18,13 @@ class RestHapiServer extends EventEmitter {
 		_hapi = new Hapi.Server();
 		this.hapi = _hapi;
 		_server_config = server_config;
-		if (server_config.env_path) require('dotenv').config({ path: server_config.env_path }); //load .env file
-		else require('dotenv').config();
+		if (server_config.env_path) {
+			console.log('[ENV] Loading config path from ' + server_config.env_path);
+			require('dotenv').config({ path: server_config.env_path }); //load .env file
+		} else {
+			console.log('[ENV] Loading config path from root project folder');
+			require('dotenv').config();
+		}
 		//set logger level
 		_logger = new Logger(process.env.LOGGING_LEVEL || 'info');
 
