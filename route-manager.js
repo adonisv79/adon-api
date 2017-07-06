@@ -1,41 +1,9 @@
 "use strict";
 const _ = require('lodash');
-const Boom = require('boom');
 const EventEmitter = require('events');
-const logger = require('./adon-logger')();
 const Promise = require('bluebird');
 const REST_METHODS = [ 'GET', 'HEAD', 'POST', 'PUT', 'DELETE', 'TRACE', 'OPTIONS', 'CONNECT', 'PATCH' ];
-let _singleton, _server, self
-
-function handleRouteError(req, rep, err) {
-	let code;
-
-	if (!err.isBoom) {
-		if (!err.isBoom && err.name && !(err.name === 'Error' || err.name === 'TypeError')) {
-			if (err.message) {
-				err.name = ''; //hide the name because BOOM appends it to the message
-			}
-		}
-		err = Boom.badRequest(err);
-	}
-
-	if (err.isBoom) {
-		code = err.statusCode || err.output.statusCode;
-	} else { //other error types
-		if (err.name === 'MongoError') {
-			code = 500;
-			err = Boom.badImplementation(err);
-		}
-	}
-
-	if (code >= 400 && code < 500) { //handle client errors
-		logger.error('route', err.message, err);
-	} else { //handle server (and possibly any other codes) errors
-		logger.critical('route', err.message, err);
-	}
-
-	return rep(Boom.wrap(err));
-}
+let _singleton, _server, self;
 
 class RouteManager extends EventEmitter{
 	constructor(server) {
@@ -47,7 +15,7 @@ class RouteManager extends EventEmitter{
 	loadRoutes() {
 		return new Promise((resolve, reject) => {
 			const route_path = _server.path.root + '/routes';
-			logger.info('server', 'Loading routes from ' + route_path + '/routes...');
+			_server.log('info','server', 'Loading routes from ' + route_path + '/routes...');
 			let routes = require('require-all')({
 				dirname     :  route_path,
 				filter      :  /(.)\.js$/,
@@ -68,13 +36,13 @@ class RouteManager extends EventEmitter{
 		self.emit('add', route_config);
 		//validate critical items
 		if (!route_config.method) {
-			logger.critical('route', 'ROUTE_METHOD_UNDEFINED');
+			_server.log('critical','route', 'ROUTE_METHOD_UNDEFINED');
 		} else if (REST_METHODS.indexOf(route_config.method.toUpperCase()) < 0) {
-			logger.critical('route', 'ROUTE_METHOD_INVALID');
+			_server.log('critical','route', 'ROUTE_METHOD_INVALID');
 		} else if (!route_config.path) {
-			logger.critical('route', 'ROUTE_PATH_UNDEFINED');
+			_server.log('critical','route', 'ROUTE_PATH_UNDEFINED');
 		} else if (!route_config.handler) {
-			logger.critical('route', 'ROUTE_HANDLER_UNDEFINED');
+			_server.log('critical','route', 'ROUTE_HANDLER_UNDEFINED');
 		}
 
 		//wrap the handler in our route monitor
@@ -86,7 +54,7 @@ class RouteManager extends EventEmitter{
 				path: route_config.path
 			});
 			try {
-				logger.info('route', 'endpoint called');
+				_server.log('info','route', 'endpoint called');
 				return Promise.resolve().then(() => {
 					return real_route(req, function(data, status_code) {
 						if (!status_code && data.statusCode) {
@@ -95,17 +63,16 @@ class RouteManager extends EventEmitter{
 						rep(data).code(status_code || 200);
 					});
 				}).catch((err) => {
-					handleRouteError(req, rep, err);
+					self.emit('error', req, rep, err);
 				});
 			} catch(err) {
-				handleRouteError(req, rep, err);
+				self.emit('error', req, rep, err);
 			}
-		}
-
+		};
 
 		if (_.get(route_config, 'config.validate')) {
 			route_config.config.validate.failAction = function onValidationFail(req, rep, src, err) {
-				handleRouteError(req, rep, err);
+				self.emit('error', req, rep, err);
 			}
 		}
 
