@@ -1,7 +1,7 @@
 "use strict";
 const intel = require('intel');
 const LOG_LEVELS = [ 'trace', 'verbose', 'debug', 'info', 'warn', 'error', 'critical' ];
-let _singleton, _log_level;
+let _log_level;
 
 function getReadableDate() {
 	const d = new Date();
@@ -75,6 +75,4 @@ class AdonLogger {
 	}
 }
 
-module.exports = (log_level) => {
-	return _singleton ? _singleton : _singleton = new AdonLogger(log_level)
-}
+module.exports = AdonLogger;
