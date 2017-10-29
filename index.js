@@ -1,26 +1,26 @@
 'use strict';
 
 const _ = require('lodash');
+const config = require('config');
 const EventEmitter = require('events');
 const Hapi = require('hapi');
 const Logger = require('./adon-logger');
-const path = require('path');
 const Promise = require('bluebird');
 const url = require('url');
-let _hapi, _server_config, _logger, _routes, _plugins;
+let _hapi, _logger, _routes, _plugins;
 
 class RestHapiServer extends EventEmitter {
 
-	constructor(server_config = {}) {
+	constructor() {
 		super();
 
 		//initiate server instance
 		_hapi = new Hapi.Server();
 		this.hapi = _hapi;
-		_server_config = server_config;
-		if (server_config.env_path) {
-			console.log('[ENV] Loading config path from ' + server_config.env_path);
-			require('dotenv').config({ path: server_config.env_path }); //load .env file
+		if (_.get(config.server, 'env_path')) {
+			const env_path = _.get(config.server, 'env_path');
+			console.log('[ENV] Loading config path from ' + env_path);
+			require('dotenv').config({ path: env_path }); //load .env file
 		} else {
 			console.log('[ENV] Loading config path from root project folder');
 			require('dotenv').config();
@@ -28,7 +28,7 @@ class RestHapiServer extends EventEmitter {
 		//set logger level
 		_logger = new Logger(process.env.LOGGING_LEVEL || 'info');
 
-		const root_path = server_config.root_path || path.join(__dirname, './../..');
+		const root_path = _.get(config.server, 'root_path') || process.cwd();
 		_.set(this, 'path.root', root_path);
 		_logger.info('server', 'Initializing from ' + root_path + '...');
 		// Create a _hapi with a host and port

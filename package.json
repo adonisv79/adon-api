@@ -1,8 +1,8 @@
 {
   "name": "adon-api",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "author": "Adonis Lee Villamor <adonisv79@gmail.com> (http://www.bytecommander.com)",
-  "description": "HAPI Service customized for using best practices like dotenv, promises and intel logging. It prioritizes configuration over code",
+  "description": "HAPI Service customized for using best practices like config, dotenv, promises and intel logging. It prioritizes configuration over code",
   "keywords": [
     "adon",
     "api",
@@ -17,16 +17,21 @@
   },
   "main": "index.js",
   "scripts": {
+    "snyk": "node ./node_modules/snyk/cli/index.js test",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "license": "UNLICENSED",
+  "license": "MIT",
   "dependencies": {
-    "bluebird": "3.5.0",
-    "boom": "5.1.0",
+    "bluebird": "3.5.1",
+    "boom": "6.0.0",
+    "config": "1.27.0",
     "dotenv": "4.0.0",
-    "hapi": "16.4.3",
+    "hapi": "16.6.2",
     "intel": "1.2.0",
     "lodash": "4.17.4",
     "require-all": "2.2.0"
+  },
+  "devDependencies": {
+    "snyk": "1.47.0"
   }
 }
