@@ -48,24 +48,26 @@ class RouteManager extends EventEmitter{
 		//wrap the handler in our route monitor
 		const real_route = route_config.handler;
 		route_config.handler = (req, rep) => {
-			route_config;
-			self.emit('called', {
-				method: route_config.method,
-				path: route_config.path
-			});
+			const endpoint = '[' + route_config.method + ':' + route_config.path + ']';
 			try {
-				_server.log('info','route', 'endpoint called');
+				_server.log('info','route', 'endpoint ' + endpoint + ' called');
+				self.emit('called', {
+					method: route_config.method,
+					path: route_config.path
+				});
 				return Promise.resolve().then(() => {
 					return real_route(req, function(data, status_code) {
-						if (!status_code && data.statusCode) {
+						if (!status_code && data && data.statusCode) {
 							status_code = data.statusCode; //override
 						}
 						rep(data).code(status_code || 200);
 					});
 				}).catch((err) => {
+					_server.log('error','route', endpoint + err.message, err);
 					self.emit('error', req, rep, err);
 				});
 			} catch(err) {
+				_server.log('critical','route', endpoint + err.message, err);
 				self.emit('error', req, rep, err);
 			}
 		};

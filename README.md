@@ -160,3 +160,21 @@ Again, run the application and use postman to invoke POST http://localhost:8100/
 	message: 'lets eat!'
 }
 ```
+
+## Bootstrap
+Some files might be necessary to be loaded during the server startup. These processes will be organized and accessed via the bootstrap mechanism in place. First create a folder named 'bootstrap' in the root directory.
+
+## Events
+
+### Errors
+Certain objects within the server provide error events emitters. to capture route related events, add the following line of code where the server was initialized
+```javascript 1.6
+
+
+server.routes.on('error', (req, rep, err) => {
+	//..do some stuffs to validate or modify the error
+	return rep({
+		error: err
+	});
+});
+```
