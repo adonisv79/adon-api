@@ -14,7 +14,8 @@ class RouteManager extends EventEmitter{
 
 	loadRoutes() {
 		return new Promise((resolve, reject) => {
-			const route_path = _server.path.root + '/routes';
+			const route_path = `${path.resolve(__dirname + '../../..')}/routes`
+
 			_server.log('info','server', 'Loading routes from ' + route_path + '/routes...');
 			let routes = require('require-all')({
 				dirname     :  route_path,
