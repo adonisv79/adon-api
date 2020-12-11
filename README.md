@@ -1,5 +1,10 @@
 # ADON-API
-RESTFUL API framework using HAPI. This API is designed to handle secured access through token based requests and social account verifications. The goal of this writing is to produce a way to use all these great tools together and start working on your codes without the need to setup all the stuffs one by one. It is best to understand each tools provided by HAPIJS however.
+Express JS + Typescript + Jest development made easier. The goal is for us to easily build websites or APIs without managing the same dependencies and breaking out of our standards and conventions each time. We follow convention and configuration over code so that all future projects are handled easily.
+
+## How it works?
+* Express JS - our core framework is based on express and so this module will provide a library to easily kickstart an express js web service.
+* DotENV - Configurations can come from the environment or default config setup. we ensure this by writing these in the config folder of your root.
+* TypeScript - Our projects will be based only on TypeScript so make sure this is installed on your system.
 
 ## Installation
 install the following

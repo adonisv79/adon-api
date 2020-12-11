@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "commonjs",
+        "lib": [
+        "es2015",
+        "es2016",
+        "dom"
+        ],
+        "strict": true,
+        "declaration": true,
+        "sourceMap": true,
+        // "sourceRoot": "src",
+        "removeComments": true,
+        "preserveConstEnums": true,
+        "esModuleInterop": true,
+        "moduleResolution": "node",
+        "noImplicitAny": true,
+        "outDir": "dist",
+        "rootDir": "."
+    },
+    "include": [ "src/**/*", "scripts/**/*" ],
+    "exclude": [
+        "node_modules",
+        "coverage",
+        "**/*.spec.ts",
+        "**/*.test.ts"
+    ]
+}
