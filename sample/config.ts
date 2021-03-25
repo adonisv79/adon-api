@@ -1,7 +1,7 @@
-import dotenv from 'dotenv';
+import dotenv from 'dotenv'
 
-dotenv.config();
-const REDIS_URL = process.env.REDIS_URL || process.env.REDISCLOUD_URL || 'redis://localhost:6379/0';
+dotenv.config()
+const REDIS_URL = process.env.REDIS_URL || process.env.REDISCLOUD_URL || 'redis://localhost:6379/0'
 
 export default {
   dev: {
@@ -26,10 +26,11 @@ export default {
   },
   ingress: {
     rateLimit: {
-      points: process.env.INGRESS_RATELIMIT_POINTS ? parseInt(process.env.INGRESS_RATELIMIT_POINTS as string, 10) : 10,
+      points: process.env.INGRESS_RATELIMIT_POINTS ? parseInt(process.env.INGRESS_RATELIMIT_POINTS as string, 10) : 5,
       duration: process.env.INGRESS_RATELIMIT_DURATION ? parseInt(process.env.INGRESS_RATELIMIT_DURATION as string, 10) : 1,
       consumption: process.env.INGRESS_RATELIMIT_CONSUMPTION ? parseInt(process.env.INGRESS_RATELIMIT_CONSUMPTION as string, 10) : 1,
       blockDuration: process.env.INGRESS_RATELIMIT_BLOCKDURATION ? parseInt(process.env.INGRESS_RATELIMIT_BLOCKDURATION as string, 10) : 5,
     },
   },
-};
+}
+

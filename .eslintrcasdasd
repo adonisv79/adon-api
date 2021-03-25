@@ -1,0 +1,24 @@
+{
+    "extends": [ "airbnb", "plugin:@typescript-eslint/recommended" ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [ "@typescript-eslint" ],
+    "env": {
+      "node": true,
+      "amd": true,
+      "jest": true
+    },
+    "settings": {
+      "import/parsers": {
+        "@typescript-eslint/parser": [ ".ts", ".tsx" ]
+      },
+      "import/resolver": {
+        "node": {
+          "extensions": [ ".js", ".jsx", ".ts", ".tsx" ],
+          "moduleDirectory": [ "node_modules", "src/" ]
+        }
+      }
+    },
+    "rules": {
+      "semi":"error",
+    }
+  }

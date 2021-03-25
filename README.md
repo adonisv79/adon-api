@@ -3,61 +3,56 @@ Express JS + Typescript + Jest development made easier. The goal is for us to ea
 
 ## How it works?
 * Express JS - our core framework is based on express and so this module will provide a library to easily kickstart an express js web service.
-* DotENV - Configurations can come from the environment or default config setup. we ensure this by writing these in the config folder of your root.
 * TypeScript - Our projects will be based only on TypeScript so make sure this is installed on your system.
+* Redis - used for handling rate limits and advisable for using in session management.
+* Rate Limitter, helm, etc - security mechanism as recommended from express (https://expressjs.com/en/advanced/best-practice-security.html)
 
 ## Installation
 install the following
     * adon-api framework (this) 
-    * joi (which is highly recomended tool for parameter validation in hapijs)
-    * config - which stores code level configuration (those that do not change often which we do not want to be editable by the environment)
 ```npm
 npm i adon-api --save
-npm i joi --save
-npm i config --save
+```
+
+## Redis Dependency
+As mentioned abov, this API depends on Redis particularly for the RateLimitter. I would recommend the use of redis for session management and other caching concerns as well. You can run it wherever and however you want. If you have docker for example (which I use for my developments) then just run the following to spin a new redis instance
+```
+docker run --name local-redis -p 6379:6379 -d redis
 ```
 
 ## Sample code
-Create index.js in your project root and enter the following
-```javascript 1.6
-"use strict";
+Create index.ts in your project root and enter the following
+```typescript
+import { Express } from 'express';
+import { ExpressApp, ExpressAppConfig } from 'adon-api';
 
-const AdonAPI = require('adon-api');
-const server = new AdonAPI();
-server.plugins.loadHapiPlugins();
+let app: ExpressApp;
 
-return server.start().then(function onServerStarted() {
-    return server.routes.loadRoutes();
-}).then(function onRouteLoadComplete() {
-    server.log('info', 'test', 'server has started!');
-}).catch(function onError(err) {
-    server.log('error', 'test', err.message, err);
-});
-```
+async function onHealthCheck(): Promise<boolean> {
+  // test dependencies like redis, mongodb, etc. and make sure they are alive.
+  // This should be triggered every few seconds to make sure the API is wirking properly
+  // for now simulate all are ok
+  return true;
+}
 
-## Configurations
-This framework uses 2 types of configuration. A static code level configuration struct and an environment modifyable configuration (dotenv)
+async function onLoading(e: Express): Promise<void> {
+  // perform middleWareHandling here and anything that requires initializations.
+}
 
-### Code level configurations
-The config folder is where you store static (does not change much) configurations that you implement per project. This basically utilizes the nodejs 'config' project. To start, create a folder named 'config' on the root directory and add a default.js file inside. The file will contain the following:
-```javascript 1.6
-module.exports = {
-    server: {
-    env_path: './.env'
-    },
-    my: {
-        test: {
-            string: "hello",
-            array: [ 'a', 'b', 'c' ],
-            bool: true
-        }
-    }
+async function onReady(): Promise<void> {
+  // once everything is loaded, we start the application and are able to do some 
+  // other functionalities before or after it like logging or starting other services.
+  app.start();
+}
+
+// This is an ExpressApp configuration
+const cfg: ExpressAppConfig = {
+  port: config.server.port,
+  onHealthCheck,
+  onReady,
+  onLoading,
 };
-```
-You can add more configurations here as much as you like and they can be accessed in code as
-```javascript 1.6
-const config = require('config');
-server.log('debug', 'test', 'my test string is ' +  config.my.test.string);
+app = new ExpressApp(cfg);
 ```
 
 ### Environment configurations
