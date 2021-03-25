@@ -2,10 +2,12 @@ import path from 'path'
 import e, {
   Express, Request, Response, NextFunction,
 } from 'express'
+import cors from 'cors'
 import HttpError from 'http-error-types'
 // These security implementations allow us to prevent data leak and attacks from hackers.
 // Guides include best practices from https://expressjs.com/en/advanced/best-practice-security.html
 import helmet from 'helmet'
+import config from './../ConfigHelper'
 import logger from './../../libs/Logger'
 import { LoggerTemplate } from 'logger-template'
 import rlimitMiddleware from './ExpressAppRateLimiter'
@@ -65,6 +67,8 @@ export class ExpressApp {
 
   private async init(): Promise<void> {
     try {
+      this.log.info(`[${MODULE_NAME}]: Setting up cors`)
+      this.addCorsMiddleware()
       const publicPath = path.join(__dirname, PUBLIC_PATH)
       this.log.info(`[${MODULE_NAME}]: Setting public path in ${publicPath}`)
       this._app.use(e.static(publicPath))
@@ -83,8 +87,6 @@ export class ExpressApp {
       await this._appConfig.onLoading(this._app)
       this.addErrorHandlerMiddleware()
 
-
-
       this._isReady = true
       this.log.info(`[${MODULE_NAME}]: Server is ready...`)
       await this._appConfig.onReady(this._app)
@@ -92,6 +94,22 @@ export class ExpressApp {
       this.log.error(`[${MODULE_NAME}]: Initialization failed`, err)
       process.exit(1)
     }
+  }
+
+  private addCorsMiddleware(): void {
+    const corsWhitelist: string[] = (config.get('SERVER_CORS_ALLOWED_ORIGINS') || '*').split(';')
+    this._app.use(cors({
+      origin: function (origin, callback) {
+        if (corsWhitelist[0] === '*') {
+          return callback(null, true)
+        } else if (origin && corsWhitelist.indexOf(origin) !== -1) {
+          return callback(null, true)
+        }  else if (!origin) {
+          return callback(null, origin)
+        }
+        callback(new Error('Not allowed by CORS'))
+      },
+    }))
   }
 
   private addErrorHandlerMiddleware(): void {
