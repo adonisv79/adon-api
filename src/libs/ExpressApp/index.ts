@@ -3,15 +3,16 @@ import e, {
   Express, Request, Response, NextFunction,
 } from 'express'
 import cors from 'cors'
-import HttpError from 'http-error-types'
+// import HttpError from 'http-error-types'
 // These security implementations allow us to prevent data leak and attacks from hackers.
 // Guides include best practices from https://expressjs.com/en/advanced/best-practice-security.html
 import helmet from 'helmet'
-import config from './../ConfigHelper'
-import logger from './../../libs/Logger'
 import { LoggerTemplate } from 'logger-template'
+import config from '../ConfigHelper'
+import logger from '../Logger'
 import rlimitMiddleware from './ExpressAppRateLimiter'
-import { getAppRoot } from './../pathfinder'
+import { getAppRoot } from '../pathfinder'
+// eslint-disable-next-line import/no-cycle
 import RouteManager from './RouteManager'
 
 const MODULE_NAME = 'EXPRESSAPP'
@@ -30,13 +31,17 @@ export interface ExpressAppConfig {
   };
 }
 
-
 export class ExpressApp {
   private _app: Express
+
   private _routes: RouteManager
+
   private _isReady: boolean
+
   private _logger: LoggerTemplate
+
   private _appConfig: ExpressAppConfig
+
   private _rootDir: string
 
   get isReady(): boolean {
@@ -79,7 +84,7 @@ export class ExpressApp {
       // Load routes
       this.log.info(`[${MODULE_NAME}]: Adding Healthcheck endpoint...`)
       this.addHealthCheckMiddleware()
-      this.log.info(`[${MODULE_NAME}]: Loading Routes...`)
+      this.log.info(`[${MODULE_NAME}]: Loading Routes in '${this.rootDir}/routes'...`)
       await this._routes.init()
 
       // Load other custom stuffs from consuming app
@@ -99,35 +104,32 @@ export class ExpressApp {
   private addCorsMiddleware(): void {
     const corsWhitelist: string[] = (config.get('SERVER_CORS_ALLOWED_ORIGINS') || '*').split(';')
     this._app.use(cors({
-      origin: function (origin, callback) {
-        if (corsWhitelist[0] === '*') {
-          return callback(null, true)
-        } else if (origin && corsWhitelist.indexOf(origin) !== -1) {
-          return callback(null, true)
-        }  else if (!origin) {
-          return callback(null, origin)
-        }
-        callback(new Error('Not allowed by CORS'))
+      origin: (origin, callback) => {
+        if (corsWhitelist[0] === '*') { return callback(null, true) }
+        if (origin && corsWhitelist.indexOf(origin) !== -1) { return callback(null, true) }
+        if (!origin) { return callback(null, origin) }
+        return callback(new Error('Not allowed by CORS'))
       },
     }))
   }
 
   private addErrorHandlerMiddleware(): void {
-    this._app.use((err: HttpError, req: Request, res: Response): void => {
-      if (!err.isHttpError) { // generic error
-        this.log.error(`${MODULE_NAME}_UNHANDLED_ERROR`, { name: err.name, message: err.message, stack: err.stack })
-        res.status(500).send({ error: 'Apologies but an error occured from our end. Please report this so we can serve you better.' })
-        return
-      }
-      this.log.error(err.message, {
-        name: err.name, message: err.message, stack: err.stack, statusCode: err.statusCode,
-      })
-      res.status(err.statusCode).send(err.message)
+    this._app.use((_req: Request, _res: Response, next): void => {
+      // if (!err.isHttpError) { // generic error
+      //   this.log.error(`${MODULE_NAME}_UNHANDLED_ERROR`, { name: err.name, message: err.message, stack: err.stack })
+      //   res.status(500).send({ error: 'Apologies but an error occured from our end. Please report this so we can serve you better.' })
+      //   return
+      // }
+      // this.log.error(err.message, {
+      //   name: err.name, message: err.message, stack: err.stack, statusCode: err.statusCode,
+      // })
+      // res.status(err.statusCode).send(err.message)
+      next()
     })
   }
 
   private addHealthCheckMiddleware(): void {
-    this._app.use('/health', async (req: Request, res: Response, next: NextFunction) => {
+    this._app.use('/health', async (_req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await this._appConfig.onHealthCheck(this._app)
         if (result === true) {

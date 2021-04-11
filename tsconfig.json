@@ -1,29 +1,33 @@
 {
     "compilerOptions": {
-        "target": "es6",
-        "module": "commonjs",
-        "lib": [
-            "es2015",
-            "es2016",
-            "dom"
-        ],
-        "strict": true,
-        "declaration": true,
-        "sourceMap": true,
+        // Source Maps
         "sourceRoot": "src",
+        // Project Options
+        "declaration": true,
+        "lib": [ "es6", "dom" ],
+        "module": "commonjs",
+        "outDir": "dist",
         "removeComments": true,
-        "preserveConstEnums": true,
+        "rootDir": ".",
+        "sourceMap": true,
+        "target": "es6",
+        // Module Resolution
         "esModuleInterop": true,
         "moduleResolution": "node",
+        // Strict Checks
         "noImplicitAny": true,
-        "outDir": "dist",
-        "rootDir": "."
+        "noImplicitThis": true,
+        "strict": true,
+        // Linter checks
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "noUncheckedIndexedAccess": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        // Advanced Config
+        "preserveConstEnums": false,
+        "forceConsistentCasingInFileNames": true,
     },
-    "include": [ "src/**/*", "scripts/**/*" ],
-    "exclude": [
-        "node_modules",
-        "coverage",
-        "**/*.spec.ts",
-        "**/*.test.ts"
-    ]
+    "include": [ "src/**/*", "sample/**/*" ],
+    "exclude": [ "node_modules", "coverage", "**/*.spec.ts", "**/*.test.ts" ]
 }

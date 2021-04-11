@@ -15,13 +15,13 @@ async function onLoading(): Promise<void> {
 }
 
 async function onReady(): Promise<void> {
-  // once everything is loaded, we start the application and are able to do some 
+  // once everything is loaded, we start the application and are able to do some
   // other functionalities before or after it like logging or starting other services.
   app.start()
 }
 
 const cfg: ExpressAppConfig = {
-  port: parseInt(EnvConfig.get('PORT')) || 3000,
+  port: parseInt(EnvConfig.get('PORT') || '3000'),
   onHealthCheck,
   onReady,
   onLoading,

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express'
 import { RateLimiterRedis, IRateLimiterStoreOptions } from 'rate-limiter-flexible'
 import Redis from 'ioredis'
-import config from './../ConfigHelper'
+import config from '../ConfigHelper'
 import logger from '../Logger'
 
 logger.info('Setting rate limiter...')
@@ -10,18 +10,18 @@ const rc = new Redis(config.get('redis_connectionString_rateLimitter'))
 const options: IRateLimiterStoreOptions = {
   storeClient: rc,
   keyPrefix: 'middleware',
-  points: parseInt(config.get('INGRESS_RATELIMIT_POINTS')) || 5,
-  duration: parseInt(config.get('INGRESS_RATELIMIT_DURATION')) || 1,
-  blockDuration: parseInt(config.get('INGRESS_RATELIMIT_BLOCKDURATION')) || 1,
-  inmemoryBlockOnConsumed: parseInt(config.get('INGRESS_RATELIMIT_POINTS')) || 5,
-  inmemoryBlockDuration: parseInt(config.get('INGRESS_RATELIMIT_BLOCKDURATION')) || 1,
+  points: parseInt(config.get('INGRESS_RATELIMIT_POINTS') || '5', 10),
+  duration: parseInt(config.get('INGRESS_RATELIMIT_DURATION') || '1', 10),
+  blockDuration: parseInt(config.get('INGRESS_RATELIMIT_BLOCKDURATION') || '1', 10),
+  inmemoryBlockOnConsumed: parseInt(config.get('INGRESS_RATELIMIT_POINTS') || '5', 10),
+  inmemoryBlockDuration: parseInt(config.get('INGRESS_RATELIMIT_BLOCKDURATION') || '1', 10),
 }
 const rateLimiter: RateLimiterRedis = new RateLimiterRedis(options)
 
 export default async function middleware(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
     if (req.ip) {
-      await rateLimiter.consume(req.ip, parseInt(config.get('INGRESS_RATELIMIT_CONSUMPTION')) || 1)
+      await rateLimiter.consume(req.ip, parseInt(config.get('INGRESS_RATELIMIT_CONSUMPTION') || '1', 10))
     } else {
       res.status(400).send('REQUEST_INVALID')
     }
