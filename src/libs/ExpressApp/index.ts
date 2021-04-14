@@ -7,9 +7,10 @@ import cors from 'cors'
 // These security implementations allow us to prevent data leak and attacks from hackers.
 // Guides include best practices from https://expressjs.com/en/advanced/best-practice-security.html
 import helmet from 'helmet'
-import { LoggerTemplate } from 'logger-template'
+import { Logger } from 'winston'
+// import { LoggerTemplate } from 'logger-template'
 import config from '../ConfigHelper'
-import logger from '../Logger'
+import { logger, morganMiddleware } from '../Logger'
 import rlimitMiddleware from './ExpressAppRateLimiter'
 import { getAppRoot } from '../pathfinder'
 // eslint-disable-next-line import/no-cycle
@@ -38,7 +39,7 @@ export class ExpressApp {
 
   private _isReady: boolean
 
-  private _logger: LoggerTemplate
+  private _logger: Logger
 
   private _appConfig: ExpressAppConfig
 
@@ -48,7 +49,7 @@ export class ExpressApp {
     return this._isReady
   }
 
-  get log(): LoggerTemplate {
+  get log(): Logger {
     return this._logger
   }
 
@@ -72,6 +73,8 @@ export class ExpressApp {
 
   private async init(): Promise<void> {
     try {
+      this.log.info('utilizing morgan...')
+      this._app.use(morganMiddleware)
       this.log.info(`[${MODULE_NAME}]: Setting up cors`)
       this.addCorsMiddleware()
       const publicPath = path.join(__dirname, PUBLIC_PATH)
@@ -95,6 +98,10 @@ export class ExpressApp {
       this._isReady = true
       this.log.info(`[${MODULE_NAME}]: Server is ready...`)
       await this._appConfig.onReady(this._app)
+      this.log.error(new Error('ssddjasjkdssdhkh'))
+      this.log.warn('sad', new Error('ssddjasjkdssdhkh'))
+      this.log.http('sad', { uti: 'asd' })
+      this.log.debug('sad', { uti: 'asd' })
     } catch (err) {
       this.log.error(`[${MODULE_NAME}]: Initialization failed`, err)
       process.exit(1)

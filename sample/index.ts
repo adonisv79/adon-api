@@ -21,7 +21,7 @@ async function onReady(): Promise<void> {
 }
 
 const cfg: ExpressAppConfig = {
-  port: parseInt(EnvConfig.get('PORT') || '3000'),
+  port: parseInt(EnvConfig.get('PORT') || '3000', 10),
   onHealthCheck,
   onReady,
   onLoading,
