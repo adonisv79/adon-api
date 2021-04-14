@@ -8,14 +8,13 @@ import cors from 'cors'
 // Guides include best practices from https://expressjs.com/en/advanced/best-practice-security.html
 import helmet from 'helmet'
 import { Logger } from 'winston'
-import config from '../ConfigHelper'
-import { logger, morganMiddleware } from '../Logger'
+import { logger, morganMiddleware } from '../logger'
 import rlimitMiddleware from './ExpressAppRateLimiter'
-import { getAppRoot } from '../pathfinder'
+import { getAppRoot } from '../utils'
+import config from '../config'
 // eslint-disable-next-line import/no-cycle
 import RouteManager from './RouteManager'
 
-const MODULE_NAME = 'EXPRESSAPP'
 const PUBLIC_PATH = '../../public'
 
 export type AsyncCallback<T> = (e: Express) => Promise<T>
@@ -72,43 +71,40 @@ export class ExpressApp {
 
   private async init(): Promise<void> {
     try {
-      this.log.info('utilizing morgan...')
+      this.log.info('Loading API configurations...')
+      this.log.debug(config)
+      this.log.info('Utilizing morgan...')
       this._app.use(morganMiddleware)
-      this.log.info(`[${MODULE_NAME}]: Setting up cors`)
       this.addCorsMiddleware()
       const publicPath = path.join(__dirname, PUBLIC_PATH)
-      this.log.info(`[${MODULE_NAME}]: Setting public path in ${publicPath}`)
+      this.log.info(`Setting public path in ${publicPath}`)
       this._app.use(e.static(publicPath))
       // Load security routes first
-      this.log.info(`[${MODULE_NAME}]: Loading securty middlewares...`)
+      this.log.info('Loading securty middlewares...')
       this._app.use(helmet())
       this._app.use(rlimitMiddleware)
-      // Load routes
-      this.log.info(`[${MODULE_NAME}]: Adding Healthcheck endpoint...`)
       this.addHealthCheckMiddleware()
-      this.log.info(`[${MODULE_NAME}]: Loading Routes in '${this.rootDir}/routes'...`)
+      this.log.info(`Loading Routes in '${this.rootDir}/routes'...`)
       await this._routes.init()
 
       // Load other custom stuffs from consuming app
-      this.log.info(`[${MODULE_NAME}]: Loading...`)
+      this.log.info('Loading...')
       await this._appConfig.onLoading(this._app)
       this.addErrorHandlerMiddleware()
 
       this._isReady = true
-      this.log.info(`[${MODULE_NAME}]: Server is ready...`)
+      this.log.info('Server is ready...')
       await this._appConfig.onReady(this._app)
-      this.log.error(new Error('ssddjasjkdssdhkh'))
-      this.log.warn('sad', new Error('ssddjasjkdssdhkh'))
-      this.log.http('sad', { uti: 'asd' })
-      this.log.debug('sad', { uti: 'asd' })
     } catch (err) {
-      this.log.error(`[${MODULE_NAME}]: Initialization failed`, err)
+      this.log.error('Initialization failed', err)
       process.exit(1)
     }
   }
 
   private addCorsMiddleware(): void {
-    const corsWhitelist: string[] = (config.get('SERVER_CORS_ALLOWED_ORIGINS') || '*').split(';')
+    this.log.info('Setting up cors...')
+    const corsWhitelist: string[] = (config?.API?.SECURITY?.CORS_ORIGINS || '*').split(';')
+    this.log.debug(corsWhitelist)
     this._app.use(cors({
       origin: (origin, callback) => {
         if (corsWhitelist[0] === '*') { return callback(null, true) }
@@ -135,7 +131,8 @@ export class ExpressApp {
   }
 
   private addHealthCheckMiddleware(): void {
-    this._app.use('/health', async (_req: Request, res: Response, next: NextFunction) => {
+    this.log.info(`Adding Healthcheck endpoint path '${config?.API?.STATS?.HEALTH?.ENDPOINT}'...`)
+    this._app.use(config?.API?.STATS?.HEALTH?.ENDPOINT, async (_req: Request, res: Response, next: NextFunction) => {
       try {
         const result = await this._appConfig.onHealthCheck(this._app)
         if (result === true) {
@@ -151,10 +148,10 @@ export class ExpressApp {
 
   start(): void {
     if (!this.isReady) {
-      throw new Error(`${MODULE_NAME}_NOT_READY`)
+      throw new Error('SERVER_NOT_READY')
     }
     this._app.listen(this._appConfig.port, () => {
-      this.log.info(`[${MODULE_NAME}]: listening on port ${this._appConfig.port}!`)
+      this.log.info(`listening on port ${this._appConfig.port}!`)
     })
   }
 }

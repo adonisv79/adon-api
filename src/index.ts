@@ -1,2 +1,2 @@
-export { ExpressApp, ExpressAppConfig } from './libs/ExpressApp'
-export { default as EnvConfig } from './libs/ConfigHelper'
+export { ExpressApp, ExpressAppConfig } from './ExpressApp'
+export { default as config } from './config'

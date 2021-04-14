@@ -1,4 +1,4 @@
-import { ExpressApp, ExpressAppConfig, EnvConfig } from '../src'
+import { ExpressApp, ExpressAppConfig, config } from '../src'
 
 // eslint-disable-next-line prefer-const
 let app: ExpressApp
@@ -21,7 +21,7 @@ async function onReady(): Promise<void> {
 }
 
 const cfg: ExpressAppConfig = {
-  port: parseInt(EnvConfig.get('PORT') || '3000', 10),
+  port: parseInt(config?.API?.PORT || '3000', 10),
   onHealthCheck,
   onReady,
   onLoading,

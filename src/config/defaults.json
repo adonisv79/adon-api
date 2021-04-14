@@ -1,0 +1,29 @@
+{
+  "API": {
+    "LOGGING": {
+      "LEVEL": "warn"
+    },
+    "INGRESS": {
+      "RATELIMITER": {
+        "POINTS": "5",
+        "CONSUMPTION": "1",
+        "DURATION": "1",
+        "BLOCKDURATION": "5"
+      }
+    },
+    "PORT": "3000",
+    "REDIS": {
+      "CONNECTIONS": {
+        "RATELIMITTER": ""
+      }
+    },
+    "SECURITY": {
+      "CORS_ORIGINS": "*" 
+    },
+    "STATS": {
+      "HEALTH": {
+        "ENDPOINT": "/health"
+      }
+    }
+  }
+}

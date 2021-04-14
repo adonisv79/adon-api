@@ -13,6 +13,8 @@ Express JS + Typescript + Jest development made easier. The goal is for us to ea
 * TypeScript - Our projects will be based only on TypeScript so make sure this is installed on your system.
 * Redis - used for handling rate limits and advisable for using in session management.
 * Rate Limitter, helm, etc - security mechanism as recommended from express (https://expressjs.com/en/advanced/best-practice-security.html)
+* Winston + Morgan - default logger mechanism
+* RC and DOTENV for configuration
 
 ## Installation
 install the following
@@ -62,13 +64,15 @@ app = new ExpressApp(cfg)
 ```
 
 ### Environment configurations
-As best practice, the service insist on setting your service level and security risk configurations within the environment. The EnvConfig module uses the dotEnv module to load all environment variables in a .env file which populates the config with all environment variables.
+* PORT - sets the prot number where the service will listed to. (Default: 3000)
+* SERVER_CORS_ALLOWED_ORIGINS - sets the allowed request origins urls. multiple URLs are divided by semicolon. (Default: '*')
 
-Create a file named '.env' in the root of the application. enter the following
+Either set in your machine environment the values or create a file named '.env' in the root of the application then enter the following
 ```text
 PORT=3000
 SERVER_CORS_ALLOWED_ORIGINS=http://localhost.com;http://bytecommander.com;http://bcomm-local.com
 ```
+
 You can add more configurations here as much as you like and they can be accessed in code as
 ```javascript 1.6
 import { EnvConfig } from 'adon-api'
