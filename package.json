@@ -10,7 +10,7 @@
   "scripts": {
     "start:server": "nodemon --config nodemon.json --exec ts-node sample/index.ts",
     "audit": "npm audit",
-    "lint": "eslint \"src/**/*.ts\" \"sample/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\"",
     "snyk": "snyk test",
     "test": "jest",
     "test:coverage": "jest --coverage",
