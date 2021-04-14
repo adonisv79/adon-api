@@ -8,7 +8,6 @@ import cors from 'cors'
 // Guides include best practices from https://expressjs.com/en/advanced/best-practice-security.html
 import helmet from 'helmet'
 import { Logger } from 'winston'
-// import { LoggerTemplate } from 'logger-template'
 import config from '../ConfigHelper'
 import { logger, morganMiddleware } from '../Logger'
 import rlimitMiddleware from './ExpressAppRateLimiter'
