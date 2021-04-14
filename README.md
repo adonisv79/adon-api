@@ -1,12 +1,12 @@
-# ADON-API
+# adon-api
 Express JS + Typescript + Jest development made easier. The goal is for us to easily build websites or APIs without managing the same dependencies and breaking out of our standards and conventions each time. We follow convention and configuration over code so that all future projects are handled easily.
 
 ## Project stats
-* Package: [![npm](https://img.shields.io/npm/v/ADON-API.svg)](https://www.npmjs.com/package/ADON-API) [![npm](https://img.shields.io/npm/dm/ADON-API.svg)](https://www.npmjs.com/package/ADON-API)
-* License: [![GitHub](https://img.shields.io/github/license/adonisv79/ADON-API.svg)](https://github.com/adonisv79/ADON-API/blob/master/LICENSE)
-* CICD: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8308805088ac436b82f87e48a48633a1)](https://www.codacy.com/gh/adonisv79/ADON-API/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adonisv79/ADON-API&amp;utm_campaign=Badge_Grade) [![Known Vulnerabilities](https://snyk.io/test/github/adonisv79/ADON-API/badge.svg)](https://snyk.io/test/github/adonisv79/ADON-API)
-  * develop: [![Build Status](https://www.travis-ci.com/adonisv79/ADON-API.svg?branch=develop)](https://www.travis-ci.com/adonisv79/ADON-API) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/ADON-API/badge.svg?branch=develop)](https://coveralls.io/github/adonisv79/ADON-API?branch=develop)
-  * master: [![Build Status](https://www.travis-ci.com/adonisv79/ADON-API.svg?branch=master)](https://www.travis-ci.com/adonisv79/ADON-API) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/ADON-API/badge.svg?branch=master)](https://coveralls.io/github/adonisv79/ADON-API?branch=master)
+* Package: [![npm](https://img.shields.io/npm/v/adon-api.svg)](https://www.npmjs.com/package/adon-api) [![npm](https://img.shields.io/npm/dm/adon-api.svg)](https://www.npmjs.com/package/adon-api)
+* License: [![GitHub](https://img.shields.io/github/license/adonisv79/adon-api.svg)](https://github.com/adonisv79/adon-api/blob/master/LICENSE)
+* CICD: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8308805088ac436b82f87e48a48633a1)](https://www.codacy.com/gh/adonisv79/adon-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adonisv79/adon-api&amp;utm_campaign=Badge_Grade) [![Known Vulnerabilities](https://snyk.io/test/github/adonisv79/adon-api/badge.svg)](https://snyk.io/test/github/adonisv79/adon-api)
+  * develop: [![Build Status](https://www.travis-ci.com/adonisv79/adon-api.svg?branch=develop)](https://www.travis-ci.com/adonisv79/adon-api) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/adon-api/badge.svg?branch=develop)](https://coveralls.io/github/adonisv79/adon-api?branch=develop)
+  * master: [![Build Status](https://www.travis-ci.com/adonisv79/adon-api.svg?branch=master)](https://www.travis-ci.com/adonisv79/adon-api) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/adon-api/badge.svg?branch=master)](https://coveralls.io/github/adonisv79/adon-api?branch=master)
 
 ## How it works?
 * Express JS - our core framework is based on express and so this module will provide a library to easily kickstart an express js web service.
