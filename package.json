@@ -14,7 +14,7 @@
     "snyk": "snyk test",
     "test": "jest --forceExit --runInBand",
     "test:coverage": "jest --forceExit --runInBand --coverage",
-    "coveralls": "jest --forceExit --runInBand --coverage && cat ./coverage/lcov.info | coveralls",
+    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
     "build": "tsc"
   },
   "repository": {
