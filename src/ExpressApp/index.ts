@@ -1,12 +1,11 @@
+import http, { Server } from 'http'
 import path from 'path'
-import e, {
-  Express, Request, Response, NextFunction,
-} from 'express'
+import e, { Express } from 'express'
 import cors from 'cors'
-// import HttpError from 'http-error-types'
 // These security implementations allow us to prevent data leak and attacks from hackers.
 // Guides include best practices from https://expressjs.com/en/advanced/best-practice-security.html
 import helmet from 'helmet'
+import { createTerminus, HealthCheckMap } from '@godaddy/terminus'
 import { Logger } from 'winston'
 import { logger, morganMiddleware } from '../logger'
 import rlimitMiddleware from './ExpressAppRateLimiter'
@@ -24,6 +23,7 @@ export interface ExpressAppConfig {
   onHealthCheck: AsyncCallback<boolean>;
   onLoading: AsyncCallback<void>;
   onReady: AsyncCallback<void>;
+  onDestroy: AsyncCallback<void>;
   view?: {
     engine: string;
     path: string;
@@ -32,6 +32,8 @@ export interface ExpressAppConfig {
 
 export class ExpressApp {
   private _app: Express
+
+  private _server: Server
 
   private _routes: RouteManager
 
@@ -55,8 +57,12 @@ export class ExpressApp {
     return this._rootDir
   }
 
-  get express():Express {
+  get express(): Express {
     return this._app
+  }
+
+  get server(): Server {
+    return this._server
   }
 
   constructor(appConfig: ExpressAppConfig) {
@@ -65,6 +71,7 @@ export class ExpressApp {
     this._appConfig = appConfig
     this._isReady = false
     this._app = e()
+    this._server = http.createServer(this._app)
     this._routes = new RouteManager(this)
     this.init()
   }
@@ -75,22 +82,17 @@ export class ExpressApp {
       this.log.debug(config)
       this.log.info('Utilizing morgan...')
       this._app.use(morganMiddleware)
-      this.addCorsMiddleware()
       const publicPath = path.join(__dirname, PUBLIC_PATH)
       this.log.info(`Setting public path in ${publicPath}`)
       this._app.use(e.static(publicPath))
-      // Load security routes first
-      this.log.info('Loading securty middlewares...')
-      this._app.use(helmet())
-      this._app.use(rlimitMiddleware)
-      this.addHealthCheckMiddleware()
+      this.initSecurityMiddlewares()
+      this.initTerminus()
       this.log.info(`Loading Routes in '${this.rootDir}/routes'...`)
       await this._routes.init()
 
       // Load other custom stuffs from consuming app
       this.log.info('Loading...')
       await this._appConfig.onLoading(this._app)
-      this.addErrorHandlerMiddleware()
 
       this._isReady = true
       this.log.info('Server is ready...')
@@ -101,7 +103,7 @@ export class ExpressApp {
     }
   }
 
-  private addCorsMiddleware(): void {
+  private initSecurityMiddlewares(): void {
     this.log.info('Setting up cors...')
     const corsWhitelist: string[] = (config?.API?.SECURITY?.CORS_ORIGINS || '*').split(';')
     this.log.debug(corsWhitelist)
@@ -113,36 +115,32 @@ export class ExpressApp {
         return callback(new Error('Not allowed by CORS'))
       },
     }))
+    this.log.info('Applying helmet...')
+    this._app.use(helmet())
+    this.log.info('Applying rate-limitter...')
+    this._app.use(rlimitMiddleware)
   }
 
-  private addErrorHandlerMiddleware(): void {
-    this._app.use((_req: Request, _res: Response, next): void => {
-      // if (!err.isHttpError) { // generic error
-      //   this.log.error(`${MODULE_NAME}_UNHANDLED_ERROR`, { name: err.name, message: err.message, stack: err.stack })
-      //   res.status(500).send({ error: 'Apologies but an error occured from our end. Please report this so we can serve you better.' })
-      //   return
-      // }
-      // this.log.error(err.message, {
-      //   name: err.name, message: err.message, stack: err.stack, statusCode: err.statusCode,
-      // })
-      // res.status(err.statusCode).send(err.message)
-      next()
-    })
-  }
-
-  private addHealthCheckMiddleware(): void {
-    this.log.info(`Adding Healthcheck endpoint path '${config?.API?.STATS?.HEALTH?.ENDPOINT}'...`)
-    this._app.use(config?.API?.STATS?.HEALTH?.ENDPOINT, async (_req: Request, res: Response, next: NextFunction) => {
-      try {
-        const result = await this._appConfig.onHealthCheck(this._app)
-        if (result === true) {
-          res.status(200).send('OK')
+  private initTerminus(): void {
+    this.log.info('Applying healthcheck and graceful shutdown using terminus...')
+    const healthChecks: HealthCheckMap = {}
+    healthChecks[(config?.API?.STATS?.HEALTH?.ENDPOINT || '/health')] = async () => {
+      await this._appConfig.onHealthCheck(this._app)
+    }
+    createTerminus(this._server, {
+      signal: 'SIGINT',
+      logger: (message: string, err: Error) => {
+        if (err) {
+          logger.error(message, err)
         } else {
-          res.status(500).send('NOT OK')
+          logger.warn(message)
         }
-      } catch (err) {
-        next(err)
-      }
+      },
+      healthChecks,
+      onSignal: async () => {
+        await this.destroy()
+      },
+      onShutdown: async () => { logger.info('Shutting down service...') },
     })
   }
 
@@ -150,8 +148,14 @@ export class ExpressApp {
     if (!this.isReady) {
       throw new Error('SERVER_NOT_READY')
     }
-    this._app.listen(this._appConfig.port, () => {
+    this._server.listen(this._appConfig.port, () => {
       this.log.info(`listening on port ${this._appConfig.port}!`)
     })
+  }
+
+  async destroy(): Promise<void> {
+    this._isReady = false
+    await this._appConfig.onDestroy(this._app)
+    this._server.close()
   }
 }

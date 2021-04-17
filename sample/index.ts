@@ -1,4 +1,4 @@
-import { ExpressApp, ExpressAppConfig, config } from '../src'
+import { ExpressApp, config } from '../src'
 
 // eslint-disable-next-line prefer-const
 let app: ExpressApp
@@ -7,6 +7,7 @@ async function onHealthCheck(): Promise<boolean> {
   // test dependencies like redis, mongodb, etc. and make sure they are alive.
   // This should be triggered every few seconds to make sure the API is wirking properly
   // for now simulate all are ok
+  console.log('Healthcheck called...')
   return true
 }
 
@@ -20,10 +21,15 @@ async function onReady(): Promise<void> {
   app.start()
 }
 
-const cfg: ExpressAppConfig = {
+async function onDestroy(): Promise<void> {
+  // run codes to perform proper cleanups or allow time for some functions to take time to complete
+  console.log('cleaning up stuffs...')
+}
+
+app = new ExpressApp({
   port: parseInt(config?.API?.PORT || '3000', 10),
   onHealthCheck,
   onReady,
   onLoading,
-}
-app = new ExpressApp(cfg)
+  onDestroy,
+})

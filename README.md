@@ -15,6 +15,7 @@ Express JS + Typescript + Jest development made easier. The goal is for us to ea
 * Rate Limitter, helm, etc - security mechanism as recommended from express (https://expressjs.com/en/advanced/best-practice-security.html)
 * Winston + Morgan - default logger mechanism
 * RC and DOTENV for configuration
+* @godaddy/terminus for healthcheck and handling graceful termination of the service
 
 ## Installation
 install the following
