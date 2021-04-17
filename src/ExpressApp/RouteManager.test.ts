@@ -30,10 +30,10 @@ describe('RouteManager', () => {
     expect(route).toBeTruthy()
   })
 
-  it('should itterate through the file list and properly generate routes for the service', () => {
-    const route = new RouteManager(app)
-    route.init()
-    expect(route).toBeTruthy()
-    // todo: finish this
-  })
+  // it('should itterate through the file list and properly generate routes for the service', () => {
+  //   const route = new RouteManager(app)
+  //   route.init()
+  //   expect(route).toBeTruthy()
+  //   // todo: finish this
+  // })
 })

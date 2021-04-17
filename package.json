@@ -12,9 +12,9 @@
     "audit": "npm audit",
     "lint": "eslint \"src/**/*.ts\"",
     "snyk": "snyk test",
-    "test": "jest",
-    "test:coverage": "jest --coverage",
-    "coveralls": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "test": "jest --forceExit --runInBand",
+    "test:coverage": "jest --forceExit --runInBand --coverage",
+    "coveralls": "jest --forceExit --runInBand --coverage && cat ./coverage/lcov.info | coveralls",
     "build": "tsc"
   },
   "repository": {
