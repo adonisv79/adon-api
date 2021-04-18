@@ -8,10 +8,9 @@ import helmet from 'helmet'
 import { createTerminus, HealthCheckMap } from '@godaddy/terminus'
 import { Logger } from 'winston'
 import { logger, morganMiddleware } from '../logger'
-import rlimitMiddleware from './ExpressAppRateLimiter'
+import rlimitMiddleware, { destroyRateLimitterRedisConn } from './ExpressAppRateLimiter'
 import { getAppRoot } from '../utils'
 import config from '../config'
-// eslint-disable-next-line import/no-cycle
 import RouteManager from './RouteManager'
 
 const PUBLIC_PATH = '../../public'
@@ -72,7 +71,7 @@ export class ExpressApp {
     this._isReady = false
     this._app = e()
     this._server = http.createServer(this._app)
-    this._routes = new RouteManager(this)
+    this._routes = new RouteManager(this._app, this._rootDir)
     this.init()
   }
 
@@ -156,6 +155,7 @@ export class ExpressApp {
   async destroy(): Promise<void> {
     this._isReady = false
     await this._appConfig.onDestroy(this._app)
+    destroyRateLimitterRedisConn()
     this._server.close()
   }
 }
