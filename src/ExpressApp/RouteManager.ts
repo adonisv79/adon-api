@@ -1,18 +1,17 @@
 import e from 'express'
 import fs from 'fs'
-// eslint-disable-next-line import/no-cycle
-import { ExpressApp } from '.'
+import { logger } from '../logger'
 
 const MODULE_NAME = 'EXPRESSAPP_ROUTEMANAGER'
 
 export default class RouteManager {
-  private _api: ExpressApp
+  private _api: e.Express
 
   private _routePath: string
 
-  constructor(api: ExpressApp) {
+  constructor(api: e.Express, rootDir: string) {
     this._api = api
-    this._routePath = `${this._api.rootDir}/routes`
+    this._routePath = `${rootDir}/routes`
   }
 
   async init(): Promise<void> {
@@ -24,7 +23,7 @@ export default class RouteManager {
       }
       return true
     })
-    this._api.log.info(`[${MODULE_NAME}]: Found ${routeNames.length} route(s)`)
+    logger.info(`[${MODULE_NAME}]: Found ${routeNames.length} route(s)`)
     if (routeNames.length > 0) {
       const loadRoutePromises = []
       for (let i = 0; i < routeNames.length; i += 1) {
@@ -32,15 +31,15 @@ export default class RouteManager {
           const router = e.Router()
           const routeFilePath = `${this._routePath}/${routeNames[i]}`
           const loadRouter = await import(routeFilePath)
-          this._api.log.info(`[${MODULE_NAME}]: Loading route file ${routeFilePath}`)
+          logger.info(`[${MODULE_NAME}]: Loading route file ${routeFilePath}`)
           await loadRouter.default(this._api, router)
           const fname = routeNames[i]?.split('.')
           let routeName = '/'
           if (fname && fname[0]?.toLowerCase() !== 'index') {
             routeName = `/${fname[0]?.split('_').join('/')}`
           }
-          this._api.express.use(routeName, router)
-          this._api.log.info(`[${MODULE_NAME}]: route created for ${routeName}`)
+          this._api.use(routeName, router)
+          logger.info(`[${MODULE_NAME}]: route created for ${routeName}`)
         })())
       }
       await Promise.all(loadRoutePromises)

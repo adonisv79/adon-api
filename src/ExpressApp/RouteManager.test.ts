@@ -26,11 +26,11 @@ describe('RouteManager', () => {
   })
 
   it('should start a new instance of RouteManage', () => {
-    const route = new RouteManager(app)
+    const route = new RouteManager(app.express, app.rootDir)
     expect(route).toBeTruthy()
   })
 
-  // it('should itterate through the file list and properly generate routes for the service', () => {
+  // it('should iterate through the file list and properly generate routes for the service', () => {
   //   const route = new RouteManager(app)
   //   route.init()
   //   expect(route).toBeTruthy()

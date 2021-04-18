@@ -42,3 +42,7 @@ export default async function middleware(req: Request, res: Response, next: Next
     res.status(429).send('REQUEST_TOO_MANY')
   }
 }
+
+export function destroyRateLimitterRedisConn(): void {
+  if (rc.status === 'ready') rc.disconnect()
+}
