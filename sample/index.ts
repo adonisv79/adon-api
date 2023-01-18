@@ -7,7 +7,7 @@ async function onHealthCheck(): Promise<boolean> {
   // test dependencies like redis, mongodb, etc. and make sure they are alive.
   // This should be triggered every few seconds to make sure the API is wirking properly
   // for now simulate all are ok
-  console.log('Healthcheck called...')
+  app.log.info('Healthcheck called...')
   return true
 }
 
@@ -23,7 +23,7 @@ async function onReady(): Promise<void> {
 
 async function onDestroy(): Promise<void> {
   // run codes to perform proper cleanups or allow time for some functions to take time to complete
-  console.log('cleaning up stuffs...')
+  app.log.info('cleaning up stuffs...')
 }
 
 app = new ExpressApp({

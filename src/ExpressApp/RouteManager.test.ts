@@ -26,7 +26,7 @@ describe('RouteManager', () => {
   })
 
   it('should start a new instance of RouteManage', () => {
-    const route = new RouteManager(app.express, app.rootDir)
+    const route = new RouteManager(app, app.rootDir)
     expect(route).toBeTruthy()
   })
 

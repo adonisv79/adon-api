@@ -5,9 +5,9 @@ import cors from 'cors'
 // These security implementations allow us to prevent data leak and attacks from hackers.
 // Guides include best practices from https://expressjs.com/en/advanced/best-practice-security.html
 import helmet from 'helmet'
-import { createTerminus, HealthCheckMap } from '@godaddy/terminus'
 import { Logger } from 'winston'
-import { logger, morganMiddleware } from '../logger'
+import ExpressAppInterface from './ExpressAppInterface'
+import logger from '../logger'
 import rlimitMiddleware, { destroyRateLimitterRedisConn } from './ExpressAppRateLimiter'
 import { getAppRoot } from '../utils'
 import config from '../config'
@@ -29,7 +29,7 @@ export interface ExpressAppConfig {
   };
 }
 
-export class ExpressApp {
+export class ExpressApp implements ExpressAppInterface {
   private _app: Express
 
   private _server: Server
@@ -71,7 +71,7 @@ export class ExpressApp {
     this._isReady = false
     this._app = e()
     this._server = http.createServer(this._app)
-    this._routes = new RouteManager(this._app, this._rootDir)
+    this._routes = new RouteManager(this, this._rootDir)
     this.init()
   }
 
@@ -79,13 +79,10 @@ export class ExpressApp {
     try {
       this.log.info('Loading API configurations...')
       this.log.debug(config)
-      this.log.info('Utilizing morgan...')
-      this._app.use(morganMiddleware)
       const publicPath = path.join(__dirname, PUBLIC_PATH)
       this.log.info(`Setting public path in ${publicPath}`)
       this._app.use(e.static(publicPath))
       this.initSecurityMiddlewares()
-      this.initTerminus()
       this.log.info(`Loading Routes in '${this.rootDir}/routes'...`)
       await this._routes.init()
 
@@ -115,32 +112,9 @@ export class ExpressApp {
       },
     }))
     this.log.info('Applying helmet...')
-    this._app.use(helmet())
+    this._app.use(helmet() as e.RequestHandler)
     this.log.info('Applying rate-limitter...')
     this._app.use(rlimitMiddleware)
-  }
-
-  private initTerminus(): void {
-    this.log.info('Applying healthcheck and graceful shutdown using terminus...')
-    const healthChecks: HealthCheckMap = {}
-    healthChecks[(config?.API?.STATS?.HEALTH?.ENDPOINT || '/health')] = async () => {
-      await this._appConfig.onHealthCheck(this._app)
-    }
-    createTerminus(this._server, {
-      signal: 'SIGINT',
-      logger: (message: string, err: Error) => {
-        if (err) {
-          logger.error(message, err)
-        } else {
-          logger.warn(message)
-        }
-      },
-      healthChecks,
-      onSignal: async () => {
-        await this.destroy()
-      },
-      onShutdown: async () => { logger.info('Shutting down service...') },
-    })
   }
 
   start(): void {

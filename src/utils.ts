@@ -5,6 +5,7 @@ import path from 'path'
  * @returns The app root path
  */
 export function getAppRoot():string {
+  // use the entry point file's directory if it exists.
   if (require.main) {
     return path.parse(require.main.filename).dir
   }

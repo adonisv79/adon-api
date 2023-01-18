@@ -8,15 +8,60 @@ Express JS + Typescript + Jest development made easier. The goal is for us to ea
   * develop: [![Build Status](https://www.travis-ci.com/adonisv79/adon-api.svg?branch=develop)](https://www.travis-ci.com/adonisv79/adon-api) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/adon-api/badge.svg?branch=develop)](https://coveralls.io/github/adonisv79/adon-api?branch=develop)
   * master: [![Build Status](https://www.travis-ci.com/adonisv79/adon-api.svg?branch=master)](https://www.travis-ci.com/adonisv79/adon-api) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/adon-api/badge.svg?branch=master)](https://coveralls.io/github/adonisv79/adon-api?branch=master)
 
+## Running the sample
+On the root of this project is a simplified sample project. Run it with the following command...
+```npm
+npm run start:sample
+```
+Then from your browser, check the route endpoints for these
+* http://localhost:3000
+* http://localhost:3000/test
+
 ## How it works?
+Technologies used:
 * Express JS - our core framework is based on express and so this module will provide a library to easily kickstart an express js web service.
 * TypeScript - Our projects will be based only on TypeScript so make sure this is installed on your system.
 * Redis - used for handling rate limits and advisable for using in session management.
 * Rate Limitter, helm, etc - security mechanism as recommended from express (https://expressjs.com/en/advanced/best-practice-security.html)
-* Winston + Morgan - default logger mechanism
-* RC and DOTENV for configuration
-* @godaddy/terminus for healthcheck and handling graceful termination of the service
+* Winston - default logger mechanism
+* DOTENV for configuration
 
+### logger
+The built-in logger (winston) is set to utilize the common 6 logging levels in my dev experience. You can access the logger instance as part of the ExpressApp instance's 'log' property.
+
+```node
+// usage log.{level}( message, meta )
+ExpressApp.log.info('Information here', { traceToken: 'SOME-GUID'})
+ExpressApp.log.error('An error occured here', { traceToken: 'SOME-GUID', err })
+```
+const levels = {
+  crit: 0, // Critical errors that impact the stability of the system rendering it useless or break
+  error: 1, // Errors that affect a process flow that may will need attention
+  warn: 2, // Warnings that may affect requests or the entire service
+  info: 3, // Regular log informations that are non-issue but may help understand the service state
+  debug: 4, // debug level logs that should not be in production
+  verbose: 5, // verbose information that may include even PII that should never be in production
+}
+
+### RouteManager
+The RouteManager structures how REST routes are defined on the project. It also adds generic logs and a 'trace-token' to the request header that we can use to better debug logs for a particular request (user must make sure to add this explicitely to the meta of the logs). To define your routes, create a {*.rt.ts} file in the project's "routes" folder. It should export as default a function named route that accepts 2 parameters (the ExpressApp instance and the express router object).
+
+```node
+import { ExpressApp, Router, Request, Response } from 'adon-api'
+
+export default function route(app: ExpressApp, router: Router): void {
+  router.get('/', async (req: Request, res: Response) => {
+    res.send('This is the root main route')
+    app.log.debug('Response sent!', { traceToken: req.headers['trace-token'] })
+  })
+
+  router.get('/test', async (req: Request, res: Response) => {
+    res.send('This is the root test route')
+    app.log.debug('Response sent!', { traceToken: req.headers['trace-token'] })
+  })
+}
+
+```
 ## Installation
 install the following
     * adon-api framework (this) 
@@ -25,12 +70,12 @@ npm i adon-api --save
 ```
 
 ## Redis Dependency
-As mentioned abov, this API depends on Redis particularly for the RateLimitter. I would recommend the use of redis for session management and other caching concerns as well. You can run it wherever and however you want. If you have docker for example (which I use for my developments) then just run the following to spin a new redis instance
+As mentioned above, this API depends on Redis particularly for the RateLimitter. I would recommend the use of redis for session management and other caching concerns as well. You can run it wherever and however you want. If you have docker for example (which I use for my developments) then just run the following to spin a new redis instance
 ```
 docker run --name local-redis -p 6379:6379 -d redis
 ```
 
-## Sample code
+## How to use
 Create index.ts in your project root and enter the following
 ```typescript
 import { ExpressApp, ExpressAppConfig, EnvConfig } from 'adon-api'
@@ -65,7 +110,7 @@ app = new ExpressApp(cfg)
 ```
 
 ### Environment configurations
-* PORT - sets the prot number where the service will listed to. (Default: 3000)
+* PORT - sets the port number where the service will listed to. (Default: 3000)
 * SERVER_CORS_ALLOWED_ORIGINS - sets the allowed request origins urls. multiple URLs are divided by semicolon. (Default: '*')
 
 Either set in your machine environment the values or create a file named '.env' in the root of the application then enter the following

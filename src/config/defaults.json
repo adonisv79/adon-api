@@ -1,7 +1,7 @@
 {
   "API": {
     "LOGGING": {
-      "LEVEL": "warn"
+      "LEVEL": "debug"
     },
     "INGRESS": {
       "RATELIMITER": {

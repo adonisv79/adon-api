@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 import { RateLimiterRedis, IRateLimiterStoreOptions } from 'rate-limiter-flexible'
 import Redis from 'ioredis'
 import config from '../config'
-import { logger } from '../logger'
+import logger from '../logger'
 
 logger.info('Setting rate limiter...')
 const rc = new Redis(config?.API?.REDIS?.CONNECTIONS.RATELIMITTER)
