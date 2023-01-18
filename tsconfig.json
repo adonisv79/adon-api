@@ -10,7 +10,7 @@
 		"removeComments": true,
 		"rootDir": ".",
 		"sourceMap": true,
-		"target": "es6","skipLibCheck": true,
+		"target": "es6",
 		// Module Resolution
 		"esModuleInterop": true,
 		"moduleResolution": "node",
