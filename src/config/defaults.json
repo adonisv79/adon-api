@@ -11,7 +11,7 @@
         "BLOCKDURATION": "5"
       }
     },
-    "PORT": "3000",
+    "PORT": "80",
     "REDIS": {
       "CONNECTIONS": {
         "RATELIMITTER": ""

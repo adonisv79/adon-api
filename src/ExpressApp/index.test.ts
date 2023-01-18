@@ -1,14 +1,11 @@
-import { mocked } from 'ts-jest/dist/utils/testing'
-import { Logger } from 'winston'
+// import { Logger } from 'winston'
 import { ExpressApp } from './index'
 import RouteManager from './RouteManager'
-import { logger } from '../logger'
+// import { logger } from '../logger'
 
 jest.mock('./RouteManager')
 jest.mock('../logger')
 RouteManager.prototype.init = jest.fn()
-mocked(logger).debug.mockImplementation(() => ({} as Logger))
-// const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never)
 let app: ExpressApp
 const onHealthCheck = jest.fn()
 const onLoading = jest.fn()
