@@ -1,4 +1,3 @@
-// import { Logger } from 'winston'
 import { ExpressApp } from './index'
 import RouteManager from './RouteManager'
 // import { logger } from '../logger'
