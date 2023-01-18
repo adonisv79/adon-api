@@ -1,5 +1,4 @@
 import { mocked } from 'ts-jest/dist/utils/testing'
-// import supertest, { SuperTest, Test } from 'supertest'
 import { Logger } from 'winston'
 import { ExpressApp } from './index'
 import RouteManager from './RouteManager'
@@ -11,7 +10,6 @@ RouteManager.prototype.init = jest.fn()
 mocked(logger).debug.mockImplementation(() => ({} as Logger))
 // const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never)
 let app: ExpressApp
-// let request: SuperTest<Test>
 const onHealthCheck = jest.fn()
 const onLoading = jest.fn()
 const onReady = jest.fn(async () => {
@@ -20,23 +18,6 @@ const onReady = jest.fn(async () => {
 const onDestroy = jest.fn()
 
 describe('ExpressApp', () => {
-  // beforeEach(() => {
-  //   app = new ExpressApp({
-  //     onDestroy,
-  //     onHealthCheck,
-  //     onLoading,
-  //     onReady,
-  //     port: 7777,
-  //   })
-  //   // request = supertest(app.server)
-  // })
-
-  // afterAll(async () => {
-  //   await app.destroy()
-  //   jest.clearAllMocks()
-  //   console.log('asdjhskalhdjkhasdhjklas')
-  // })
-
   it('cannot be tested', () => {
     expect('Jest has problems with express and http server not releasing resources with it').toBeTruthy()
     expect(onLoading).toHaveBeenCalledTimes(0)
