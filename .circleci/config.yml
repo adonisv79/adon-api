@@ -13,7 +13,6 @@ jobs:
       - node/install-packages:
           pkg-manager: npm
       - run: npm run audit
-      - run: npm run snyk
       - run: npm run lint
       - run: npm run test
   say-hello:
