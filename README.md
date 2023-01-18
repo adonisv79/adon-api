@@ -5,8 +5,8 @@ Express JS + Typescript + Jest development made easier. The goal is for us to ea
 * Package: [![npm](https://img.shields.io/npm/v/adon-api.svg)](https://www.npmjs.com/package/adon-api) [![npm](https://img.shields.io/npm/dm/adon-api.svg)](https://www.npmjs.com/package/adon-api)
 * License: [![GitHub](https://img.shields.io/github/license/adonisv79/adon-api.svg)](https://github.com/adonisv79/adon-api/blob/master/LICENSE)
 * CICD: [![Codacy Badge](https://app.codacy.com/project/badge/Grade/8308805088ac436b82f87e48a48633a1)](https://www.codacy.com/gh/adonisv79/adon-api/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=adonisv79/adon-api&amp;utm_campaign=Badge_Grade) [![Known Vulnerabilities](https://snyk.io/test/github/adonisv79/adon-api/badge.svg)](https://snyk.io/test/github/adonisv79/adon-api)
-  * develop: [![Build Status](https://www.travis-ci.com/adonisv79/adon-api.svg?branch=develop)](https://www.travis-ci.com/adonisv79/adon-api) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/adon-api/badge.svg?branch=develop)](https://coveralls.io/github/adonisv79/adon-api?branch=develop)
-  * master: [![Build Status](https://www.travis-ci.com/adonisv79/adon-api.svg?branch=master)](https://www.travis-ci.com/adonisv79/adon-api) [![Coverage Status](https://coveralls.io/repos/github/adonisv79/adon-api/badge.svg?branch=master)](https://coveralls.io/github/adonisv79/adon-api?branch=master)
+  * develop: [![CircleCI](https://dl.circleci.com/status-badge/img/gh/adonisv79/adon-api/tree/develop.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/adonisv79/adon-api/tree/develop)
+  * master: [![CircleCI](https://dl.circleci.com/status-badge/img/gh/adonisv79/adon-api/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/adonisv79/adon-api/tree/master)
 
 ## Running the sample
 On the root of this project is a simplified sample project. Run it with the following command...
