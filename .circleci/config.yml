@@ -6,7 +6,7 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  code_quality_test:
+  test:
     executor: node/default
     steps:
       - checkout
@@ -15,22 +15,26 @@ jobs:
       - run: npm run audit
       - run: npm run lint
       - run: npm run test
-  say-hello:
-    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
-    docker:
-      - image: cimg/base:stable
-    # Add steps to the job
-    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - .
+  publish:
+    executor: node/default
     steps:
-      - checkout
-      - run:
-          name: "Audit Dependencies"
-          command: "npm run audit"
-
+      - attach_workspace:
+          at: ~/project
+      - run: npm run build
+      - run: npm publish 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
   main-workflow:
     jobs:
-      - code_quality_test
+      - test
+      - publish:
+        requires:
+          - test
+        filters:
+          branches:
+            only: master
