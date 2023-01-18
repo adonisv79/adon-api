@@ -48,3 +48,6 @@ workflows:
       - publish_module:
           requires:
             - test_quality
+          filters:
+            branches:
+              only: master
