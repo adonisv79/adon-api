@@ -30,8 +30,15 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/project
-      - run: npm run build
-      - run: npm publish 
+      - run:
+          name: Building distributable files
+          command: npm run build
+      - run:
+          name: Authenticate with registry
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run:
+          name: Publishing package to registry
+          command: npm publish 
 # Invoke jobs via workflows
 # See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
@@ -41,6 +48,3 @@ workflows:
       - publish_module:
           requires:
             - test_quality
-          filters:
-            branches:
-              only: master
