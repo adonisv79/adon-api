@@ -10,7 +10,7 @@
 		"removeComments": true,
 		"rootDir": ".",
 		"sourceMap": true,
-		"target": "es6",
+		"target": "es6","skipLibCheck": true,
 		// Module Resolution
 		"esModuleInterop": true,
 		"moduleResolution": "node",
@@ -29,5 +29,5 @@
 		"forceConsistentCasingInFileNames": true,
 	},
 	"include": [ "src/**/*" ],
-	"exclude": [ "dist", "logs", "node_modules", "coverage", "**/*.spec.ts", "**/*.test.ts" ]
+	"exclude": [ "dist", "logs", "node_modules", "coverage", "src/**/*.test.ts" ]
 }

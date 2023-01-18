@@ -9,6 +9,6 @@ describe('Test configurations', () => {
 
   it('should be able override default values', () => {
     expect(config.API).toBeTruthy()
-    expect(config.API.PORT).toEqual('80')
+    expect(config.API.PORT).toEqual('3000')
   })
 })
