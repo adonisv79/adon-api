@@ -6,20 +6,26 @@ orbs:
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  test:
+  test_quality:
     executor: node/default
     steps:
       - checkout
       - node/install-packages:
           pkg-manager: npm
-      - run: npm run audit
-      - run: npm run lint
-      - run: npm run test
+      - run:
+          command: npm run audit
+          name: Audit dependencies
+      - run:
+          command: npm run lint
+          name: Performing lint check
+      - run:
+          command: npm run test
+          name: Runing unit tests and code coverage
       - persist_to_workspace:
           root: ~/project
           paths:
             - .
-  publish:
+  publish_module:
     executor: node/default
     steps:
       - attach_workspace:
@@ -31,10 +37,10 @@ jobs:
 workflows:
   main-workflow:
     jobs:
-      - test
-      - publish:
-        requires:
-          - test
-        filters:
-          branches:
-            only: master
+      - test_quality
+      - publish_module:
+          requires:
+            - test_quality
+          filters:
+            branches:
+              only: master
