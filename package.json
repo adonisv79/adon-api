@@ -9,7 +9,7 @@
   ],
   "scripts": {
     "audit": "npm audit",
-    "publish": "tsc && npm publish .",
+    "build": "tsc",
     "start:sample": "nodemon --config nodemon.json --exec ts-node sample/index.ts",
     "lint": "eslint \"src/**/*.ts\"",
     "snyk": "snyk test",
