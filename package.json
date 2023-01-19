@@ -1,6 +1,6 @@
 {
   "name": "adon-api",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "description": "API for all Adon-based projects",
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
