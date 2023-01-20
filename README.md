@@ -27,10 +27,18 @@ Technologies used:
 
 * Express JS - our core framework is based on express and so this module will provide a library to easily kickstart an express js web service.
 * TypeScript - Our projects will be based only on TypeScript so make sure this is installed on your system.
-* Redis - used for handling rate limits and advisable for using in session management.
-* Rate Limitter, helm, etc - security mechanism as recommended from express (https://expressjs.com/en/advanced/best-practice-security.html)
+* DOTENV - Loading process.env for environment specific configurations
 * Winston - default logger mechanism
-* DOTENV for configuration
+
+### Configurations
+
+For now we reverted to use a simple hardcoded config object and injected the process.env (Environment Variables) to it
+
+#### Default Configs
+
+* API.LOGGING.LEVEL - The default logging level that gets rendered in the console (default: 'debug')
+* API.PORT - The default PORT to be used by the server (default: 3000)
+* API.SECURITY.CORS_ORIGINS - The CORS Origins to be allows (default: '*')
 
 ### logger
 

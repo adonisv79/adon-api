@@ -23,7 +23,7 @@ const levels = {
 }
 
 const logger = winston.createLogger({
-  level: config.API.LOGGING.LEVEL,
+  level: config?.API?.LOGGING?.LEVEL || 'warn',
   levels,
   transports: [
     new winston.transports.Console({
