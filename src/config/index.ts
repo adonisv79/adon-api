@@ -6,14 +6,14 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export default {
-    "API": {
-        "LOGGING": {
-            "LEVEL": "debug"
-        },
-        "PORT": "3000",
-        "SECURITY": {
-            "CORS_ORIGINS": "*"
-        }
+  API: {
+    LOGGING: {
+      LEVEL: 'debug',
     },
-    "ENV": process.env
+    PORT: '3000',
+    SECURITY: {
+      CORS_ORIGINS: '*',
+    },
+  },
+  ENV: process.env,
 }
