@@ -12,7 +12,7 @@ import { getAppRoot } from '../utils'
 import config from '../config'
 import RouteManager from './RouteManager'
 
-const PUBLIC_PATH = '../../public'
+const PUBLIC_PATH = '/public'
 
 export type AsyncCallback<T> = (e: Express) => Promise<T>
 
@@ -78,7 +78,7 @@ export class ExpressApp implements ExpressAppInterface {
     try {
       this.log.info('Loading API configurations...')
       this.log.debug(config)
-      const publicPath = path.join(__dirname, PUBLIC_PATH)
+      const publicPath = path.join(this.rootDir, PUBLIC_PATH)
       this.log.info(`Setting public path in ${publicPath}`)
       this._app.use(e.static(publicPath))
       this.initSecurityMiddlewares()
