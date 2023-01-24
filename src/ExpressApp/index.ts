@@ -87,12 +87,13 @@ export class ExpressApp implements ExpressAppInterface {
         const isHealthy = await this._appConfig.onHealthCheck(this._app)
         res.status(isHealthy ? 200 : 500).json({ status: isHealthy ? 'ok' : 'no' })
       })
+
+      this.log.info('Running custom pre-loading...')
+      await this._appConfig.onLoading(this._app)
+      this.log.info('Custom pre-loading complete!')
+
       this.log.info(`Loading Routes in '${this.rootDir}/routes'...`)
       await this._routes.init()
-
-      // Load other custom stuffs from consuming app
-      this.log.info('Loading...')
-      await this._appConfig.onLoading(this._app)
 
       this._isReady = true
       this.log.info('Server is ready...')

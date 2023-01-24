@@ -80,6 +80,16 @@ export default function route(app: ExpressApp, router: Router): void {
 
 ```
 
+### ExpressConfig
+
+ExpressApp's constructor requires an object following the ExpressAppConfig interface.
+This is composed of several required properties and methods.
+
+* port - The server port numbver to use.
+* onHealthCheck - an asynchronous function that gets called whenever the api receives a GET request from the '/health' endpoint. This is where the server should perform some stability checks specialy with 3rd party dependencies. Return true if there are no issue else log the error and return false.
+* onLoading - An asynchronous function that gets called before the routes are loaded (but after configurations are loaded and express instance is created). This is the place where you can add extra settings to the express middleware before routes are loaded (i.e. Authentication mechanisms, global middleware steps, etc.)
+* onReady - An asynchronous funstion that triggers when the express is ready to be ran. Leaving this blank terminates the app. This is where we call the app.start()
+
 ## Installation
 
 install the following
