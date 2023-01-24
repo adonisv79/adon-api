@@ -89,71 +89,20 @@ install the following
 npm i adon-api --save
 ```
 
-## Redis Dependency
-
-As mentioned above, this API depends on Redis particularly for the RateLimitter. I would recommend the use of redis for session management and other caching concerns as well. You can run it wherever and however you want. If you have docker for example (which I use for my developments) then just run the following to spin a new redis instance
-
-``` sh
-docker run --name local-redis -p 6379:6379 -d redis
-```
-
 ## How to use
 
-Create index.ts in your project root and enter the following
+Create index.ts in your project's src folder and enter the following
 
 ``` typescript
-import { ExpressApp, ExpressAppConfig, EnvConfig } from 'adon-api'
+import { ExpressApp, config } from 'adon-api'
 
-// eslint-disable-next-line prefer-const
-let app: ExpressApp
-
-async function onHealthCheck(): Promise<boolean> {
-  // test dependencies like redis, mongodb, etc. and make sure they are alive.
-  // This should be triggered every few seconds to make sure the API is wirking properly
-  // for now simulate all are ok
-  return true
-}
-
-async function onLoading(): Promise<void> {
-  // perform middleWareHandling here and anything that requires initializations.
-}
-
-async function onReady(): Promise<void> {
-  // once everything is loaded, we start the application and are able to do some 
-  // other functionalities before or after it like logging or starting other services.
-  app.start()
-}
-
-const cfg: ExpressAppConfig = {
-  port: parseInt(EnvConfig.get('PORT')) || 3000,
-  onHealthCheck,
-  onReady,
-  onLoading,
-}
-app = new ExpressApp(cfg)
-```
-
-### Environment configurations
-
-* PORT - sets the port number where the service will listed to. (Default: 3000)
-* SERVER_CORS_ALLOWED_ORIGINS - sets the allowed request origins urls. multiple URLs are divided by semicolon. (Default: '*')
-
-Either set in your machine environment the values or create a file named '.env' in the root of the application then enter the following
-
-```text
-PORT=3000
-SERVER_CORS_ALLOWED_ORIGINS=http://localhost.com;http://bytecommander.com;http://bcomm-local.com
-```
-
-You can add more configurations here as much as you like and they can be accessed in code as
-
-```javascript 1.6
-import { EnvConfig } from 'adon-api'
-
-const port = EnvConfig.get('PORT')
-// you can also set configurations on the fly
-EnvConfig.set('APP_VAR', 'Hello world')
-```
+const app: ExpressApp = new ExpressApp({
+  port:  parseInt(config.API.PORT),
+  onHealthCheck: async () => { return true },
+  onLoading: async () => {  },
+  onReady: async () => { app.start() },
+  onDestroy: async () => { app.log.info('cleaning up stuffs...') },
+})
 
 ## Routes
 

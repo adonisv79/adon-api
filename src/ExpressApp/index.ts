@@ -82,6 +82,11 @@ export class ExpressApp implements ExpressAppInterface {
       this.log.info(`Setting public path in ${publicPath}`)
       this._app.use(e.static(publicPath))
       this.initSecurityMiddlewares()
+      this.log.info('Adding healthcheck route')
+      this._app.use('/health', async (_req, res) => {
+        const isHealthy = await this._appConfig.onHealthCheck(this._app)
+        res.status(isHealthy ? 200 : 500).json({ status: isHealthy ? 'ok' : 'no' })
+      })
       this.log.info(`Loading Routes in '${this.rootDir}/routes'...`)
       await this._routes.init()
 
