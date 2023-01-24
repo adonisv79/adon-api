@@ -1,11 +1,19 @@
 /**
- * Configuration simply uses dotenv. modify configurations using environment
- * or rc files as defined in https://www.npmjs.com/package/rc
- * defaults will be loaded thru the defaults.json file
+ * Configuration simply uses dotenv and configstore.
  */
 import dotenv from 'dotenv'
 
 dotenv.config()
-const configDefaults = require('./defaults.json')
 
-export default configDefaults
+export default {
+  API: {
+    LOGGING: {
+      LEVEL: 'debug',
+    },
+    PORT: '3000',
+    SECURITY: {
+      CORS_ORIGINS: '*',
+    },
+  },
+  ENV: process.env,
+}

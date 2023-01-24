@@ -8,7 +8,6 @@ import helmet from 'helmet'
 import { Logger } from 'winston'
 import ExpressAppInterface from './ExpressAppInterface'
 import logger from '../logger'
-import rlimitMiddleware, { destroyRateLimitterRedisConn } from './ExpressAppRateLimiter'
 import { getAppRoot } from '../utils'
 import config from '../config'
 import RouteManager from './RouteManager'
@@ -113,8 +112,6 @@ export class ExpressApp implements ExpressAppInterface {
     }))
     this.log.info('Applying helmet...')
     this._app.use(helmet() as e.RequestHandler)
-    this.log.info('Applying rate-limitter...')
-    this._app.use(rlimitMiddleware)
   }
 
   start(): void {
@@ -129,7 +126,6 @@ export class ExpressApp implements ExpressAppInterface {
   async destroy(): Promise<void> {
     this._isReady = false
     await this._appConfig.onDestroy(this._app)
-    destroyRateLimitterRedisConn()
     this._server.close()
   }
 }
